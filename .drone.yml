@@ -26,6 +26,11 @@ steps:
   commands:
   - yarn run check-commits
 
+- name: check-versions
+  image: node:10
+  commands:
+  - yarn run check-versions
+
 - name: audit
   image: node:10
   commands:
@@ -347,6 +352,6 @@ trigger:
 
 ---
 kind: signature
-hmac: 627b9b4069cb241c084037dfb0284fbe47d42dd52d2c0053d99a948fdd892abe
+hmac: 2136bba5b7d73cd952410ba01e504975c4ebec66538e492c17f9aaa6e5294eb6
 
 ...
