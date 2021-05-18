@@ -58,6 +58,13 @@ interface TransactionOutput {
   coin: string;
 }
 
+interface TransactionOperation {
+  type: string;
+  amount: string;
+  coin: string;
+  validator?: string;
+}
+
 export class Cspr extends BaseCoin {
   protected readonly _staticsCoin: Readonly<StaticsBaseCoin>;
 
@@ -262,12 +269,29 @@ export class Cspr extends BaseCoin {
       const amount = accountLib.Cspr.Utils.getTransferAmount(tx.casperTx.session);
       const toAddress = accountLib.Cspr.Utils.getTransferDestinationAddress(tx._deploy.session);
       const outputs: TransactionOutput[] = [];
+      const operations: TransactionOperation[] = [];
       // TODO(https://bitgoinc.atlassian.net/browse/STLX-677): define outputs for different types of tx
       if (tx.type === accountLib.BaseCoin.TransactionType.Send) {
         outputs.push({
           address: toAddress,
           amount,
           coin: self.getChain(),
+        });
+      } else if (tx.type === accountLib.BaseCoin.TransactionType.StakingLock) {
+        const validator = accountLib.Cspr.Utils.getValidatorAddress(tx._deploy.session);
+        operations.push({
+          type: 'StackingLock',
+          amount,
+          coin: self.getChain(),
+          validator: validator,
+        });
+      } else if (tx.type === accountLib.BaseCoin.TransactionType.StakingUnlock) {
+        const validator = accountLib.Cspr.Utils.getValidatorAddress(tx._deploy.session);
+        operations.push({
+          type: 'StackingUnlock',
+          amount,
+          coin: self.getChain(),
+          validator: validator,
         });
       }
       const outputAmount = outputs
@@ -277,7 +301,16 @@ export class Cspr extends BaseCoin {
         }, new BigNumber(0))
         .toFixed(0);
 
-      const displayOrder = ['id', 'outputAmount', 'changeAmount', 'outputs', 'changeOutputs', 'transferId', 'fee'];
+      const displayOrder = [
+        'id',
+        'outputAmount',
+        'changeAmount',
+        'outputs',
+        'changeOutputs',
+        'transferId',
+        'fee',
+        'operations',
+      ];
 
       return {
         displayOrder,
@@ -288,6 +321,7 @@ export class Cspr extends BaseCoin {
         changeAmount: '0', // account base does not make change
         transferId,
         fee: params.feeInfo,
+        operations,
       };
     })
       .call(this)
