@@ -265,14 +265,15 @@ export class Cspr extends BaseCoin {
         throw new InvalidTransactionError('Error while trying to build transaction');
       }
       const id = Buffer.from(tx.casperTx.hash).toString('hex');
-      const transferId = accountLib.Cspr.Utils.getTransferId(tx.casperTx.session);
       const amount = accountLib.Cspr.Utils.getTransferAmount(tx.casperTx.session);
-      const toAddress = accountLib.Cspr.Utils.getTransferDestinationAddress(tx._deploy.session);
+      let transferId;
       const outputs: TransactionOutput[] = [];
       const operations: TransactionOperation[] = [];
 
       switch (tx.type) {
         case accountLib.BaseCoin.TransactionType.Send: {
+          transferId = accountLib.Cspr.Utils.getTransferId(tx.casperTx.session);
+          const toAddress = accountLib.Cspr.Utils.getTransferDestinationAddress(tx._deploy.session);
           outputs.push({
             address: toAddress,
             amount,

@@ -241,7 +241,7 @@ describe('Casper', function () {
     let udgBuilder;
     const transferAmount = '2500000000';
     const delegateAmount = '100000000';
-    const undelegateAmount = '10000000';
+    const undelegateAmount = '100000000';
     const transferId = 123;
 
     before(function () {
@@ -379,6 +379,17 @@ describe('Casper', function () {
         },
         feeInfo,
       };
+      const txInfo = {
+        hash: 'b47ca168a2c6ec864c5923a98bb8bca8cb78f0141bdeb37f9ad74705f8c40636',
+        fee: {
+          gasLimit: '3000000000',
+          gasPrice: '1',
+        },
+        from: '0202cc8f78c41d334ad2aaae6da7a88537f9686245761aaddf36d4b2dfbf913bb873',
+        deployType: BaseCoin.TransactionType.StakingLock,
+        amount: delegateAmount,
+        validator: '0115c9b40c06ff99b0cbadf1140b061b5dbf92103e66a6330fbcc7768f5219c1ce',
+      };
       const explainedTx = await basecoin.explainTransaction(explainTxParams);
       explainedTx.should.have.properties([
         'displayOrder',
@@ -391,13 +402,13 @@ describe('Casper', function () {
         'changeAmount',
         'operations'
       ]);
-      explainedTx.fee.should.equal(builtTxInfo.feeInfo);
+      explainedTx.fee.should.equal(explainTxParams.feeInfo);
       explainedTx.outputs.length.should.equal(0);
       explainedTx.operations.length.should.equal(1);
-      explainedTx.operations[0].amount.should.equal(builtTxInfo.txInfo.amount);
-      explainedTx.operations[0].validator.should.equal(builtTxInfo.txInfo.validator);
+      explainedTx.operations[0].amount.should.equal(txInfo.amount);
+      explainedTx.operations[0].validator.should.equal(txInfo.validator);
       explainedTx.operations[0].coin.should.equal(basecoin.getChain());
-      explainedTx.operations[0].type.should.equal(buildTxInfo.txInfo.deployType);
+      explainedTx.operations[0].type.should.equal(txInfo.deployType);
     });
 
     it('should explain a signed delegate transaction', async () => {
@@ -438,7 +449,7 @@ describe('Casper', function () {
       explainedTx.operations[0].amount.should.equal(builtTxInfo.txInfo.amount);
       explainedTx.operations[0].validator.should.equal(builtTxInfo.txInfo.validator);
       explainedTx.operations[0].coin.should.equal(basecoin.getChain());
-      explainedTx.operations[0].type.should.equal(buildTxInfo.txInfo.deployType);
+      explainedTx.operations[0].type.should.equal(builtTxInfo.txInfo.deployType);
     });
 
     it('should explain a half signed undelegate transaction', async () => {
@@ -460,17 +471,17 @@ describe('Casper', function () {
           txHex: halfSigned.txHex,
         },
         feeInfo,
-        txInfo: {
-          hash: 'b47ca168a2c6ec864c5923a98bb8bca8cb78f0141bdeb37f9ad74705f8c40636',
-          fee: {
-            gasLimit: '3000000000',
-            gasPrice: '1',
-          },
-          from: '0202cc8f78c41d334ad2aaae6da7a88537f9686245761aaddf36d4b2dfbf913bb873',
-          deployType: BaseCoin.TransactionType.StakingUnlock,
-          amount: undelegateAmount,
-          validator: '0115c9b40c06ff99b0cbadf1140b061b5dbf92103e66a6330fbcc7768f5219c1ce',
+      };
+      const txInfo = {
+        hash: 'b47ca168a2c6ec864c5923a98bb8bca8cb78f0141bdeb37f9ad74705f8c40636',
+        fee: {
+          gasLimit: '3000000000',
+          gasPrice: '1',
         },
+        from: '0202cc8f78c41d334ad2aaae6da7a88537f9686245761aaddf36d4b2dfbf913bb873',
+        deployType: BaseCoin.TransactionType.StakingUnlock,
+        amount: undelegateAmount,
+        validator: '0115c9b40c06ff99b0cbadf1140b061b5dbf92103e66a6330fbcc7768f5219c1ce',
       };
       const explainedTx = await basecoin.explainTransaction(explainTxParams);
       explainedTx.should.have.properties([
@@ -484,13 +495,13 @@ describe('Casper', function () {
         'changeAmount',
         'operations',
       ]);
-      explainedTx.fee.should.equal(builtTxInfo.feeInfo);
+      explainedTx.fee.should.equal(explainTxParams.feeInfo);
       explainedTx.outputs.length.should.equal(0);
       explainedTx.operations.length.should.equal(1);
-      explainedTx.operations[0].amount.should.equal(builtTxInfo.txInfo.amount);
-      explainedTx.operations[0].validator.should.equal(builtTxInfo.txInfo.validator);
+      explainedTx.operations[0].amount.should.equal(txInfo.amount);
+      explainedTx.operations[0].validator.should.equal(txInfo.validator);
       explainedTx.operations[0].coin.should.equal(basecoin.getChain());
-      explainedTx.operations[0].type.should.equal(buildTxInfo.txInfo.deployType);
+      explainedTx.operations[0].type.should.equal(txInfo.deployType);
     });
 
     it('should explain a signed undelegate transaction', async () => {
@@ -531,7 +542,7 @@ describe('Casper', function () {
       explainedTx.operations[0].amount.should.equal(builtTxInfo.txInfo.amount);
       explainedTx.operations[0].validator.should.equal(builtTxInfo.txInfo.validator);
       explainedTx.operations[0].coin.should.equal(basecoin.getChain());
-      explainedTx.operations[0].type.should.equal(buildTxInfo.txInfo.deployType);
+      explainedTx.operations[0].type.should.equal(builtTxInfo.txInfo.deployType);
     });
 
     it('should fail when a tx is not passed as parameter', async () => {
